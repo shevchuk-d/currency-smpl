@@ -3,6 +3,9 @@ body {
     padding-bottom: 40px;
     background-color: #eee;
 }
+.chart_div{
+    background-color: #eee;
+}
 
 .form-signin {
     max-width: 330px;

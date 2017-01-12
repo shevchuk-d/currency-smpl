@@ -22,7 +22,7 @@
     <!-- Configure the entity manager factory bean -->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="com.github.shevchuk.d.account.model"/>
+        <property name="packagesToScan" value="com.github.shevchuk.d"/>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
         </property>
@@ -49,5 +49,6 @@
     -->
 
     <jpa:repositories base-package="com.github.shevchuk.d.account.repository"/>
+    <jpa:repositories base-package="com.github.shevchuk.d.currency.repository"/>
 
 </beans>

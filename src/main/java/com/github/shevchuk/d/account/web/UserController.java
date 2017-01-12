@@ -4,6 +4,8 @@ import com.github.shevchuk.d.account.model.User;
 import com.github.shevchuk.d.account.service.SecurityService;
 import com.github.shevchuk.d.account.service.UserService;
 import com.github.shevchuk.d.account.validator.UserValidator;
+import com.github.shevchuk.d.currency.service.CurrencyRESTGetter;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.io.IOException;
 
 /**
  * Created by dmsh0216 on 10/01/2017.
@@ -25,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private CurrencyRESTGetter currencyRESTGetter;
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
@@ -49,7 +56,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
+    public String login(Model model, String error, String logout) throws IOException {
+        currencyRESTGetter.readJsonForParameters("http://api.fixer.io/", new DateTime("2016-11-11"), "USD", new String[]{"EUR"});
+
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");
 

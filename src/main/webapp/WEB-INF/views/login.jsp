@@ -47,9 +47,85 @@
 
     </form>
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <div id="chart_div"></div>
+
 </div>
 <!-- /container -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+
+<script>
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawAxisTickColors);
+
+    function drawAxisTickColors() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'X');
+        data.addColumn('number', 'Dogs');
+//        data.addColumn('number', 'Cats');
+
+        data.addRows([
+            [20161111, 0.91709],
+            [20161111, 0.91709],
+            [20161111, 0.91709],
+            [20161114, 0.92790],
+            [20161115, 0.92894],
+            [20161116, 0.93440],
+            [20161117, 0.93310],
+            [20161118, 0.94082],
+            [20161118, 0.94082],
+            [20161118, 0.94082],
+            [20161121, 0.94065],
+            [20161122, 0.94189],
+            [20161123, 0.94322],
+            [20161124, 0.94805],
+            [20161125, 0.94411],
+            [20161125, 0.94411],
+            [20161125, 0.94411],
+            [20161128, 0.94447],
+            [20161129, 0.94554],
+            [20161130, 0.94029],
+            [20161201, 0.94100]
+        ]);
+
+        var options = {
+            hAxis: {
+                title: 'Time',
+                textStyle: {
+                    color: '#01579b',
+                    fontSize: 20,
+                    fontName: 'Arial',
+                    bold: true,
+                    italic: true
+                },
+                titleTextStyle: {
+                    color: '#01579b',
+                    fontSize: 16,
+                    fontName: 'Arial',
+                    bold: false,
+                    italic: true
+                }
+            },
+            vAxis: {
+                title: 'Popularity',
+                textStyle: {
+                    color: '#1a237e',
+                    fontSize: 24,
+                    bold: true
+                },
+                titleTextStyle: {
+                    color: '#1a237e',
+                    fontSize: 24,
+                    bold: true
+                }
+            },
+            colors: ['#a52714', '#097138', 'blue']
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
+
 </body>
 </html>

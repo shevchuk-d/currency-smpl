@@ -24,4 +24,8 @@
             <value>.jsp</value>
         </property>
     </bean>
+
+    <bean id="currencyServiceImpl" class="com.github.shevchuk.d.currency.service.CurrencyServiceImpl"/>
+    <bean id="currencyRESTGetter" class="com.github.shevchuk.d.currency.service.CurrencyRESTGetter"/>
+
 </beans>
