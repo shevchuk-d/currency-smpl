@@ -56,7 +56,7 @@ public class CurrencyRESTGetter {
 
     public static CurrencyDTO parseJsonAsCurrency(JSONObject jsonObject) {
         CurrencyDTO currency = new CurrencyDTO();
-        currency.setDate(DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date"))));
+        currency.setDateTime(DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date"))));
         currency.setBase(String.valueOf(jsonObject.get("base")));
         currency.setRatesHM(
                 arrayToHashMap(String.valueOf(jsonObject.get("rates")).split(","))
@@ -82,7 +82,7 @@ public class CurrencyRESTGetter {
         for (int i = 0; i < days; i++){
             Currency currency = parseJsonAsCurrency(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
             ArrayList<String> chartItem = new ArrayList<>();
-            chartItem.add(currency.getDate().toString(DateTimeFormat.forPattern("yyyyMMdd")));
+            chartItem.add(currency.getDateTime().toString(DateTimeFormat.forPattern("yyyyMMdd")));
             Arrays.stream(bases).forEach(b -> {
                 chartItem.add(String.valueOf(currency.getRatesHM().get(b)));
             });
@@ -91,7 +91,7 @@ public class CurrencyRESTGetter {
             CurrencyEntity currencyEntity = new CurrencyEntity();
             currencyEntity.setBase(currency.getBase());
             currencyEntity.setRatesHM(currency.getRatesHM());
-            currencyEntity.setDate(currency.getDate());
+            currencyEntity.setDateTime(currency.getDateTime());
             log.info(currencyEntity.toString());
             currencyServiceImpl.save(currencyEntity);
 

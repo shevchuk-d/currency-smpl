@@ -51,8 +51,8 @@ CREATE TABLE `user_role` (
 
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency` (
-  `date` DATE NOT NULL,
+  `dateTime` DATE NOT NULL,
   `base` int DEFAULT NULL,
   `rates` varchar(511) DEFAULT NULL,
-  PRIMARY KEY (`date`)
+  PRIMARY KEY (`dateTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

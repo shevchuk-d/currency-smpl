@@ -15,13 +15,11 @@ public class CurrencyDTO implements Currency {
     private String rates;
     private HashMap<String, BigInteger> ratesHM;
 
-    @Override
-    public DateTime getDate() {
+    public DateTime getDateTime() {
         return date;
     }
-    @Override
-    public void setDate(DateTime date) {
-        this.date = date;
+    public void setDateTime(DateTime dateTime) {
+        this.date = dateTime;
     }
     @Override
     public String getBase() {
@@ -44,7 +42,7 @@ public class CurrencyDTO implements Currency {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
-        sb.append("\t\"date\": \"" + getDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "\",\n");
+        sb.append("\t\"date\": \"" + getDateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "\",\n");
         sb.append("\t\"base\": \"" + getBase() + "\",\n");
         sb.append("\t\"rates\": {\n");
         ratesHM.forEach((key, value) -> sb.append("\t\t\"" + key + "\": " + ( Float.parseFloat(String.valueOf(value))/10000 ) + ",\n"));

@@ -9,9 +9,9 @@ import java.util.HashMap;
  * Created by dmsh0216 on 11/01/2017.
  */
 public interface Currency {
-    DateTime getDate();
+    DateTime getDateTime();
 
-    void setDate(DateTime date);
+    void setDateTime(DateTime dateTime);
 
     String getBase();
 

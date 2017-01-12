@@ -5,7 +5,6 @@ import org.joda.time.format.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -15,8 +14,10 @@ import java.util.HashMap;
 @Table(name = "currency")
 public class CurrencyEntity implements Currency{
     @Id
-    @Column
-    private DateTime date;
+    @Column(name = "date")
+    private String date;
+    @Transient
+    private DateTime dateTime;
     @Column
     private String base;
     @Column
@@ -25,19 +26,19 @@ public class CurrencyEntity implements Currency{
     private HashMap<String, BigInteger> ratesHM;
 
     public CurrencyEntity(){
-        this.date = new DateTime();
+        this.dateTime = new DateTime();
         this.base = "";
+        this.date = "";
         this.ratesHM = new HashMap<>();
         this.rates = this.ratesHM.toString();
     }
 
-    @Override
-    public DateTime getDate() {
-        return date;
+    public DateTime getDateTime() {
+        return dateTime;
     }
-    @Override
-    public void setDate(DateTime date) {
-        this.date = date;
+    public void setDateTime(DateTime dateTime) {
+        this.dateTime = dateTime;
+        this.date = dateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"));
     }
     @Override
     public String getBase() {
@@ -54,6 +55,7 @@ public class CurrencyEntity implements Currency{
     @Override
     public void setRatesHM(HashMap<String, BigInteger> ratesHM) {
         this.ratesHM = ratesHM;
+        this.rates = ratesHM.toString();
     }
 
 
@@ -62,7 +64,7 @@ public class CurrencyEntity implements Currency{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
-        sb.append("\t\"date\": \"" + getDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "\",\n");
+        sb.append("\t\"dateTime\": \"" + getDateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "\",\n");
         sb.append("\t\"base\": \"" + getBase() + "\",\n");
         sb.append("\t\"rates\": {\n");
         ratesHM.forEach((key, value) -> sb.append("\t\t\"" + key + "\": " + ( Float.parseFloat(String.valueOf(value))/10000 ) + ",\n"));
@@ -80,5 +82,13 @@ public class CurrencyEntity implements Currency{
     @Override
     public void setRates(String rates) {
         this.rates = rates;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
