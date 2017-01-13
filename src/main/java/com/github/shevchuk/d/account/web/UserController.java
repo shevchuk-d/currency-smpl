@@ -4,9 +4,11 @@ import com.github.shevchuk.d.account.model.User;
 import com.github.shevchuk.d.account.service.SecurityService;
 import com.github.shevchuk.d.account.service.UserService;
 import com.github.shevchuk.d.account.validator.UserValidator;
-import com.github.shevchuk.d.currency.service.CurrencyRESTGetter;
+import com.github.shevchuk.d.currency_new.service.CurrencyRESTGetter;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,17 +23,24 @@ import java.io.IOException;
  */
 @Controller
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    private final SecurityService securityService;
+
+    private final UserValidator userValidator;
+
+    private final CurrencyRESTGetter currencyRESTGetter;
+
+    @Value("${currency.rest.service.url}")
+    private String currencyRestServiceUrl;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private UserValidator userValidator;
-
-    @Autowired
-    private CurrencyRESTGetter currencyRESTGetter;
+    public UserController(SecurityService securityService, CurrencyRESTGetter currencyRESTGetter, UserService userService, UserValidator userValidator) {
+        this.securityService = securityService;
+        this.currencyRESTGetter = currencyRESTGetter;
+        this.userService = userService;
+        this.userValidator = userValidator;
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
@@ -57,7 +66,7 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) throws IOException {
-        currencyRESTGetter.readJsonForParameters("http://api.fixer.io/", new DateTime("2016-11-11"), "USD", new String[]{"EUR"});
+        currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl, new DateTime("2016-11-11"), "USD");
 
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");

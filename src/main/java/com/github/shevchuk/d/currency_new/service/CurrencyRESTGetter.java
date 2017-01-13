@@ -1,22 +1,24 @@
-package com.github.shevchuk.d.currency.service;
+package com.github.shevchuk.d.currency_new.service;
 
-import com.github.shevchuk.d.currency.model.Currency;
-import com.github.shevchuk.d.currency.model.CurrencyDTO;
-import com.github.shevchuk.d.currency.model.CurrencyEntity;
+import com.github.shevchuk.d.currency_new.model.Currency;
+
+import com.github.shevchuk.d.currency_new.model.CurrencyEntity;
+import com.github.shevchuk.d.currency_new.model.CurrencyObject;
+
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-
 import org.joda.time.format.DateTimeFormat;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigInteger;
-
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -31,7 +33,13 @@ public class CurrencyRESTGetter {
     public static Logger log = LoggerFactory.getLogger(CurrencyRESTGetter.class);
 
     @Autowired
-    private CurrencyServiceImpl currencyServiceImpl;
+    private  CurrencyServiceImpl currencyServiceImpl;
+
+    @Value("${currency.multiplier}")
+    private static int currencyMultiplier;
+
+
+
 
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -42,7 +50,7 @@ public class CurrencyRESTGetter {
         return sb.toString();
     }
 
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+    private static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -54,14 +62,22 @@ public class CurrencyRESTGetter {
         }
     }
 
-    public static CurrencyDTO parseJsonAsCurrency(JSONObject jsonObject) {
-        CurrencyDTO currency = new CurrencyDTO();
-        currency.setDateTime(DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date"))));
-        currency.setBase(String.valueOf(jsonObject.get("base")));
-        currency.setRatesHM(
-                arrayToHashMap(String.valueOf(jsonObject.get("rates")).split(","))
-        );
-        return currency;
+    private static ArrayList<Currency> parseJsonAsCurrencies(JSONObject jsonObject) {
+        ArrayList<Currency> currencies = new ArrayList<>();
+        JSONArray jsonObjects = jsonObject.getJSONObject("rates").names();
+
+        for (int i = 0; i < jsonObjects.length(); i++) {
+            Currency currency = new CurrencyObject();
+            currency.setDateTime(String.valueOf(DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date")))));
+            currency.setBase(String.valueOf(jsonObject.get("base")));
+            currency.setTarget(jsonObjects.getString(i));
+            currency.setRate(
+                    Math.round(
+                            jsonObject.getDouble(currency.getTarget()) * currencyMultiplier
+                    )
+            );
+        }
+        return currencies;
     }
 
     private static HashMap<String, BigInteger> arrayToHashMap(String[] array){
@@ -74,36 +90,28 @@ public class CurrencyRESTGetter {
     }
 
 
-    public void readJsonForParameters(String url, DateTime from, String base, String[] bases) throws IOException {
+    public  void readJsonForParameters(String url, DateTime from, String base) throws IOException {
         ArrayList<JSONObject> currencyFromDateForBase = new ArrayList<>();
-        ArrayList<ArrayList<String>> currencyForChart = new ArrayList<>();
         DateTime today = new DateTime();
         int days = Days.daysBetween(from, today).getDays();
         for (int i = 0; i < days; i++){
-            Currency currency = parseJsonAsCurrency(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
-            ArrayList<String> chartItem = new ArrayList<>();
-            chartItem.add(currency.getDateTime().toString(DateTimeFormat.forPattern("yyyyMMdd")));
-            Arrays.stream(bases).forEach(b -> {
-                chartItem.add(String.valueOf(currency.getRatesHM().get(b)));
-            });
-            currencyForChart.add(chartItem);
             currencyFromDateForBase.add(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
-            CurrencyEntity currencyEntity = new CurrencyEntity();
-            currencyEntity.setBase(currency.getBase());
-            currencyEntity.setRatesHM(currency.getRatesHM());
-            currencyEntity.setDateTime(currency.getDateTime());
-            log.info(currencyEntity.toString());
-            currencyServiceImpl.save(currencyEntity);
         }
-
+        currencyFromDateForBase.forEach(j -> {
+            parseJsonAsCurrencies(j).forEach(currencyEntity -> {
+                currencyServiceImpl.save((CurrencyEntity) currencyEntity);
+            });
+        });
 
 
     }
 
-    public static void main(String[] args) throws IOException, JSONException {
-        new CurrencyRESTGetter().readJsonForParameters("http://api.fixer.io/", new DateTime("2016-11-11"), "USD", new String[]{"EUR"});
-
-
-    }
+//    public static void main(String[] args) throws IOException, JSONException {
+//
+//        readJsonForParameters("http://api.fixer.io/", new DateTime("2016-11-11"), "USD", new String[]{"EUR"});
+//        currencyServiceImpl.save(currencyEntity);
+//        currencyServiceImpl.save(currencyEntity);
+//
+//    }
 
 }

@@ -1,7 +1,9 @@
 package com.github.shevchuk.d.currency.model;
 
+import com.github.shevchuk.d.utils.ToStringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.springframework.core.style.ToStringCreator;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -55,7 +57,7 @@ public class CurrencyEntity implements Currency{
     @Override
     public void setRatesHM(HashMap<String, BigInteger> ratesHM) {
         this.ratesHM = ratesHM;
-        this.rates = ratesHM.toString();
+        this.rates = ToStringUtils.hashMapToString(ratesHM);
     }
 
 
@@ -91,4 +93,5 @@ public class CurrencyEntity implements Currency{
     public void setDate(String date) {
         this.date = date;
     }
+
 }

@@ -49,6 +49,6 @@
     -->
 
     <jpa:repositories base-package="com.github.shevchuk.d.account.repository"/>
-    <jpa:repositories base-package="com.github.shevchuk.d.currency.repository"/>
+    <jpa:repositories base-package="com.github.shevchuk.d.currency_new.repository"/>
 
 </beans>

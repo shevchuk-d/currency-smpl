@@ -49,10 +49,20 @@ CREATE TABLE `user_role` (
 -- Table structure for table `role`
 --
 
-DROP TABLE IF EXISTS `currency`;
-CREATE TABLE `currency` (
-  `dateTime` DATE NOT NULL,
-  `base` int DEFAULT NULL,
-  `rates` varchar(511) DEFAULT NULL,
-  PRIMARY KEY (`dateTime`)
+-- DROP TABLE IF EXISTS `currency`;
+-- CREATE TABLE `currency` (
+--   `dateTime` DATE NOT NULL,
+--   `base` int DEFAULT NULL,
+--   `rates` varchar(511) DEFAULT NULL,
+--   PRIMARY KEY (`dateTime`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `new_currency`;
+CREATE TABLE `new_currency` (
+	`dateTime` DATE NOT NULL,
+	`base` varchar(3) DEFAULT NULL,
+	`target` varchar(3) DEFAULT NULL,
+	`rate` int(511) DEFAULT NULL,
+	PRIMARY KEY (`dateTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
