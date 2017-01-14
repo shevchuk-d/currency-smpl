@@ -25,6 +25,15 @@ public class CurrencyEntity implements Currency {
 
     @Transient
     private String target;
+    public CurrencyEntity() {}
+
+    public CurrencyEntity(Currency currencyObject) {
+        this.newCurrencyEntityPK = new CurrencyEntityPK();
+        this.rate = currencyObject.getRate();
+        this.newCurrencyEntityPK.setTarget(currencyObject.getTarget());
+        this.newCurrencyEntityPK.setBase(currencyObject.getBase());
+        this.newCurrencyEntityPK.setDateTime(currencyObject.getDateTime());
+    }
 
 
     public CurrencyEntityPK getNewCurrencyEntityPK() {

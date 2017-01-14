@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by dmsh0216 on 10/01/2017.
@@ -33,6 +34,12 @@ public class UserController {
 
     @Value("${currency.rest.service.url}")
     private String currencyRestServiceUrl;
+
+    @Value("${list.of.currencies}")
+    private String listOfCurrencies;
+
+    @Value("${start.date.for.dump}")
+    private String startDateForDump;
 
     @Autowired
     public UserController(SecurityService securityService, CurrencyRESTGetter currencyRESTGetter, UserService userService, UserValidator userValidator) {
@@ -66,7 +73,14 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) throws IOException {
-        currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl, new DateTime("2016-11-11"), "USD");
+        Arrays.stream(listOfCurrencies.split(",")).forEach(c -> {
+            try {
+                currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl, new DateTime(startDateForDump), c);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
 
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");

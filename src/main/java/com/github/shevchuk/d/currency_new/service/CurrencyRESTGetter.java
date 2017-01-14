@@ -36,9 +36,7 @@ public class CurrencyRESTGetter {
     private  CurrencyServiceImpl currencyServiceImpl;
 
     @Value("${currency.multiplier}")
-    private static int currencyMultiplier;
-
-
+    private String currencyMultiplier;
 
 
     private static String readAll(Reader rd) throws IOException {
@@ -62,20 +60,23 @@ public class CurrencyRESTGetter {
         }
     }
 
-    private static ArrayList<Currency> parseJsonAsCurrencies(JSONObject jsonObject) {
+    private  ArrayList<Currency> parseJsonAsCurrencies(JSONObject jsonObject) {
         ArrayList<Currency> currencies = new ArrayList<>();
         JSONArray jsonObjects = jsonObject.getJSONObject("rates").names();
 
         for (int i = 0; i < jsonObjects.length(); i++) {
             Currency currency = new CurrencyObject();
-            currency.setDateTime(String.valueOf(DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date")))));
+            currency.setDateTime(
+                    DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(String.valueOf(jsonObject.get("date"))).toString("yyyy-MM-dd")
+            );
             currency.setBase(String.valueOf(jsonObject.get("base")));
             currency.setTarget(jsonObjects.getString(i));
             currency.setRate(
                     Math.round(
-                            jsonObject.getDouble(currency.getTarget()) * currencyMultiplier
+                            jsonObject.getJSONObject("rates").getDouble(jsonObjects.getString(i)) * Integer.parseInt(currencyMultiplier)
                     )
             );
+            currencies.add(currency);
         }
         return currencies;
     }
@@ -95,15 +96,15 @@ public class CurrencyRESTGetter {
         DateTime today = new DateTime();
         int days = Days.daysBetween(from, today).getDays();
         for (int i = 0; i < days; i++){
-            currencyFromDateForBase.add(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
+            currencyFromDateForBase
+                    .add(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
         }
         currencyFromDateForBase.forEach(j -> {
-            parseJsonAsCurrencies(j).forEach(currencyEntity -> {
-                currencyServiceImpl.save((CurrencyEntity) currencyEntity);
+            parseJsonAsCurrencies(j).forEach(currencyObject -> {
+                log.info(String.valueOf(currencyObject.getDateTime()));
+                currencyServiceImpl.save(new CurrencyEntity(currencyObject));
             });
         });
-
-
     }
 
 //    public static void main(String[] args) throws IOException, JSONException {
