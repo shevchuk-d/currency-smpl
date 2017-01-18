@@ -19,41 +19,90 @@
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
+    <script src="${contextPath}/resources/js/jquery-3.1.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script language="JavaScript" type="text/javascript"  src="https://www.gstatic.com/charts/loader.js"></script>
+    <script language="JavaScript" type="text/javascript"  src="${contextPath}/resources/js/bootstrap.min.js"></script>
+
+
     <![endif]-->
 </head>
 
 <body>
+<div id="header"></div>
+<%--<div class="container">--%>
 
-<div class="container">
+    <%--<form method="POST" action="${contextPath}/login" class="form-signin">--%>
+        <%--<h2 class="form-heading">Log in</h2>--%>
 
-    <form method="POST" action="${contextPath}/login" class="form-signin">
-        <h2 class="form-heading">Log in</h2>
+        <%--<div class="form-group ${error != null ? 'has-error' : ''}">--%>
+            <%--<span>${message}</span>--%>
+            <%--<input name="username" type="text" class="form-control" placeholder="Username"--%>
+                   <%--autofocus="true"/><br>--%>
+            <%--<input name="password" type="password" class="form-control" placeholder="Password"/>--%>
+            <%--<span>${error}</span>--%>
+            <%--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>--%>
+            <%--<br>--%>
+            <%--<button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>--%>
+            <%--<h4 class="text-center"><a href="${contextPath}/registration">Create an account</a></h4>--%>
+        <%--</div>--%>
 
-        <div class="form-group ${error != null ? 'has-error' : ''}">
-            <span>${message}</span>
-            <input name="username" type="text" class="form-control" placeholder="Username"
-                   autofocus="true"/><br>
-            <input name="password" type="password" class="form-control" placeholder="Password"/>
-            <span>${error}</span>
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <br>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-            <h4 class="text-center"><a href="${contextPath}/registration">Create an account</a></h4>
+    <%--</form>--%>
+
+
+<%--</div>--%>
+<!-- /container -->
+
+
+
+<div><table class="table-bordered"><tr><td>
+    <form:form method="GET" modelAttribute="currencySelector" class="form-signin">
+        <div class="form-group">
+            <table class="table-hover">
+                <tr>
+                    <td>
+                        <form:label path="base">
+                            <spring:message text="Base currency: "/>
+                        </form:label>
+                    </td>
+                    <td>
+                        <form:select cssClass="form-control" path="base" items="${currencies}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <form:label path="target">
+                            <spring:message text="Target currency: "/>
+                        </form:label>
+                    </td>
+                    <td>
+                        <form:select cssClass="form-control" path="target" items="${currencies}" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <form:label path="period">
+                            <spring:message text="Select period: "/>
+                        </form:label>
+                    </td>
+                    <td>
+                        <form:select cssClass="form-control" path="period" items="${periodSelect}" />
+                    </td>
+                </tr>
+            </table>
         </div>
 
-    </form>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
+    </form:form>
+</td></tr></table></div>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div><table class="table-bordered"><tr><td>
     <div id="chart_div"></div>
+</td></tr></table></div>
 
-</div>
-<!-- /container -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 
 <script>
     google.charts.load('current', {packages: ['corechart', 'line']});
@@ -61,66 +110,47 @@
 
     function drawAxisTickColors() {
         var data = new google.visualization.DataTable();
-        data.addColumn('number', 'X');
-        data.addColumn('number', 'Dogs');
-//        data.addColumn('number', 'Cats');
+        data.addColumn('date', 'X');
+        data.addColumn('number', '${currencyCurrentView.base}');
 
         data.addRows([
-            [20161111, 0.91709],
-            [20161111, 0.91709],
-            [20161111, 0.91709],
-            [20161114, 0.92790],
-            [20161115, 0.92894],
-            [20161116, 0.93440],
-            [20161117, 0.93310],
-            [20161118, 0.94082],
-            [20161118, 0.94082],
-            [20161118, 0.94082],
-            [20161121, 0.94065],
-            [20161122, 0.94189],
-            [20161123, 0.94322],
-            [20161124, 0.94805],
-            [20161125, 0.94411],
-            [20161125, 0.94411],
-            [20161125, 0.94411],
-            [20161128, 0.94447],
-            [20161129, 0.94554],
-            [20161130, 0.94029],
-            [20161201, 0.94100]
+            ${chart}
         ]);
 
         var options = {
             hAxis: {
-                title: 'Time',
+                format: 'yyyy-MM-dd',
                 textStyle: {
                     color: '#01579b',
-                    fontSize: 20,
-                    fontName: 'Arial',
-                    bold: true,
-                    italic: true
+                    fontSize: 14,
+                    fontName: 'Calibri',
+                    bold: false,
+                    italic: false
                 },
                 titleTextStyle: {
                     color: '#01579b',
                     fontSize: 16,
-                    fontName: 'Arial',
+                    fontName: 'Calibri',
                     bold: false,
-                    italic: true
+                    italic: false
                 }
             },
             vAxis: {
-                title: 'Popularity',
+                title: '${currencyCurrentView.target}',
                 textStyle: {
-                    color: '#1a237e',
-                    fontSize: 24,
-                    bold: true
+                    color: '#01579b',
+                    fontSize: 14,
+                    bold: false,
+                    italic: false
                 },
                 titleTextStyle: {
-                    color: '#1a237e',
-                    fontSize: 24,
-                    bold: true
+                    color: '#01579b',
+                    fontSize: 16,
+                    bold: false,
+                    italic: false
                 }
             },
-            colors: ['#a52714', '#097138', 'blue']
+            colors: ['#FFAB91', 'blue', '#FFAB91']
         };
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);

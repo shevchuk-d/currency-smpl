@@ -4,17 +4,23 @@ import com.github.shevchuk.d.account.model.User;
 import com.github.shevchuk.d.account.service.SecurityService;
 import com.github.shevchuk.d.account.service.UserService;
 import com.github.shevchuk.d.account.validator.UserValidator;
+import com.github.shevchuk.d.chart.model.Chart;
+
+import com.github.shevchuk.d.currency_new.model.CurrencyObject;
 import com.github.shevchuk.d.currency_new.service.CurrencyRESTGetter;
+import com.github.shevchuk.d.view.model.CurrencyCurrentView;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,6 +30,8 @@ import java.util.Arrays;
  */
 @Controller
 public class UserController {
+    public static Logger log = LoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
 
     private final SecurityService securityService;
@@ -35,11 +43,26 @@ public class UserController {
     @Value("${currency.rest.service.url}")
     private String currencyRestServiceUrl;
 
-    @Value("${list.of.currencies}")
-    private String listOfCurrencies;
+    @Value("${target.currency}")
+    private String targetCurrency;
+
+    @Value("${base.currency}")
+    private String baseCurrency;
 
     @Value("${start.date.for.dump}")
     private String startDateForDump;
+
+    @Value("${end.date.for.dump}")
+    private String endDateForDump;
+
+    @Value("${all.available.currencies}")
+    private String allAvailableCurrencies;
+
+    @Value("${periods}")
+    private String periods;
+
+    @Value("${the.beginning}")
+    private String theBeginning;
 
     @Autowired
     public UserController(SecurityService securityService, CurrencyRESTGetter currencyRESTGetter, UserService userService, UserValidator userValidator) {
@@ -60,6 +83,7 @@ public class UserController {
     public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
         userValidator.validate(userForm, bindingResult);
 
+
         if (bindingResult.hasErrors()) {
             return "registration";
         }
@@ -72,14 +96,46 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) throws IOException {
-        Arrays.stream(listOfCurrencies.split(",")).forEach(c -> {
-            try {
-                currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl, new DateTime(startDateForDump), c);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    public String login(
+            @ModelAttribute("currencySelector") CurrencyCurrentView c,
+            BindingResult bindingResult,
+            Model model,
+            String error,
+            String logout) throws IOException {
+        CurrencyCurrentView currencySelector = (CurrencyCurrentView) bindingResult.getModel().get("currencySelector");
+        if ( !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
+        if ( !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
+        if ( !(null == currencySelector.getPeriod()) && !"".equals(currencySelector.getPeriod()) ) {
+            int minus =  periodsToDays(currencySelector.getPeriod());
+            endDateForDump = new DateTime().toString();
+            startDateForDump = (minus == - 1)
+                                ? theBeginning
+                                : new DateTime().minusDays(minus).toString();
+        }
+        currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl ,
+                new DateTime(startDateForDump) ,
+                endDateForDump.toLowerCase().equals("today") ? new DateTime() : new DateTime(endDateForDump) ,
+                baseCurrency ,
+                targetCurrency
+                );
+        Chart chart = new Chart();
+        chart.setCoordinates(currencyRESTGetter.chart.getCoordinates());
+        model.addAttribute("chart", chart.toString());
+
+        CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
+        currencyCurrentView.setTarget(targetCurrency);
+        currencyCurrentView.setBase(baseCurrency);
+        currencyCurrentView.setFromTime(startDateForDump);
+
+
+        model.addAttribute("currencyCurrentView", currencyCurrentView);
+
+        String[] currencies = allAvailableCurrencies.split(",");
+        model.addAttribute("currencies", currencies);
+
+        String[] periodSelect = periods.split(",");
+        model.addAttribute("periodSelect", periodSelect);
+
 
 
         if (error != null)
@@ -95,4 +151,53 @@ public class UserController {
     public String welcome(Model model) {
         return "welcome";
     }
+
+
+//    @RequestMapping( method=RequestMethod.GET, value="/currency_chart" )
+//    public ModelAndView getSubView(@ModelAttribute("currencySelector") CurrencyCurrentView c,
+//                                    BindingResult bindingResult,
+//                                    Model model ) throws IOException {
+//        CurrencyCurrentView currencySelector = (CurrencyCurrentView) bindingResult.getModel().get("currencySelector");
+//        if ( !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
+//        if ( !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
+//        if ( !(null == currencySelector.getPeriod()) && !"".equals(currencySelector.getPeriod()) ) {
+//            endDateForDump = new DateTime().toString();
+//            startDateForDump = new DateTime().minusDays(periodsToDays(currencySelector.getPeriod())).toString();
+//        }
+//        currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl ,
+//                new DateTime(startDateForDump) ,
+//                endDateForDump.toLowerCase().equals("today") ? new DateTime() : new DateTime(endDateForDump) ,
+//                baseCurrency ,
+//                targetCurrency
+//        );
+//        CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
+//        currencyCurrentView.setTarget(targetCurrency);
+//        currencyCurrentView.setBase(baseCurrency);
+//        currencyCurrentView.setFromTime(startDateForDump);
+//        Chart chart = new Chart();
+//        chart.setCoordinates(currencyRESTGetter.chart.getCoordinates());
+//        log.debug(chart.toString());
+//        model.addAttribute("chart", chart.toString());
+//        model.addAttribute("currencyCurrentView", currencyCurrentView);
+//
+//        return new ModelAndView( "currency_chart" );
+//    }
+
+
+    private int periodsToDays(String period){
+        if ("1 week".equals(period)) return 7;
+        if ("2 weeks".equals(period)) return 14;
+        if ("1 month".equals(period)) return 30;
+        if ("3 months".equals(period)) return 90;
+        if ("6 months".equals(period)) return 180;
+        if ("1 year".equals(period)) return 365;
+        if ("3 years".equals(period)) return 1000;
+        if ("5 years".equals(period)) return 1826;
+        if ("10 years".equals(period)) return 3652;
+        if ("15 years".equals(period)) return 5475;
+        if ("from the beginning".equals(period)) return -1;
+        return 7;
+    }
+
+
 }

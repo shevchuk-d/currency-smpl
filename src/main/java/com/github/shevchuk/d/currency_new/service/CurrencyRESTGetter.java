@@ -1,5 +1,6 @@
 package com.github.shevchuk.d.currency_new.service;
 
+import com.github.shevchuk.d.chart.model.Chart;
 import com.github.shevchuk.d.currency_new.model.Currency;
 
 import com.github.shevchuk.d.currency_new.model.CurrencyEntity;
@@ -8,6 +9,7 @@ import com.github.shevchuk.d.currency_new.model.CurrencyObject;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +32,9 @@ import java.util.HashMap;
  */
 @Service
 public class CurrencyRESTGetter {
+    @Autowired
+    public Chart chart;
+
     public static Logger log = LoggerFactory.getLogger(CurrencyRESTGetter.class);
 
     @Autowired
@@ -91,28 +96,41 @@ public class CurrencyRESTGetter {
     }
 
 
-    public  void readJsonForParameters(String url, DateTime from, String base) throws IOException {
+    public  void readJsonForParameters(String url, DateTime fromDate, DateTime toDate, String baseCurrency, String targetCurrency) throws IOException {
         ArrayList<JSONObject> currencyFromDateForBase = new ArrayList<>();
-        DateTime today = new DateTime();
-        int days = Days.daysBetween(from, today).getDays();
+        int days = Days.daysBetween(fromDate, toDate).getDays();
+        int omitedDeys = days < 100 ? 0 : days/100;
         for (int i = 0; i < days; i++){
+            log.info(fromDate.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")));
+            log.info("Days to omit: " + omitedDeys);
             currencyFromDateForBase
-                    .add(readJsonFromUrl(url + from.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + base));
+                    .add(readJsonFromUrl(url + fromDate.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")) + "?base=" + baseCurrency));
+            i += omitedDeys;
         }
+        chart.setCoordinates(new ArrayList<>());
         currencyFromDateForBase.forEach(j -> {
             parseJsonAsCurrencies(j).forEach(currencyObject -> {
-                log.info(String.valueOf(currencyObject.getDateTime()));
-                currencyServiceImpl.save(new CurrencyEntity(currencyObject));
+                if (baseCurrency.equals(currencyObject.getBase()) &&
+                targetCurrency.equals(currencyObject.getTarget())
+                        ) {
+                    log.info(String.valueOf(currencyObject.getDateTime()));
+                    log.info(String.valueOf(currencyObject.getBase()));
+                    log.info(String.valueOf(currencyObject.getTarget()));
+                    ArrayList<String> arrayList = new ArrayList<>();
+                    DateTime jodaTime = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(currencyObject.getDateTime());
+                    arrayList.add("new Date("
+                            + jodaTime.getYear() + ", "
+                            + (jodaTime.getMonthOfYear() -1) + ", "
+                            + jodaTime.getDayOfMonth() + ")");
+                    arrayList.add(String.valueOf(
+                            ( (float)currencyObject.getRate() ) /  Float.parseFloat(currencyMultiplier)
+                    ));
+                    chart.getCoordinates().add(arrayList);
+                    log.info(chart.getCoordinates().toString());
+                }
             });
         });
     }
 
-//    public static void main(String[] args) throws IOException, JSONException {
-//
-//        readJsonForParameters("http://api.fixer.io/", new DateTime("2016-11-11"), "USD", new String[]{"EUR"});
-//        currencyServiceImpl.save(currencyEntity);
-//        currencyServiceImpl.save(currencyEntity);
-//
-//    }
 
 }

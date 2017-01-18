@@ -1,5 +1,7 @@
 package com.github.shevchuk.d.currency_new.model;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * Created by dmsh0216 on 13/01/2017.
  */
@@ -20,4 +22,6 @@ public interface Currency {
     String getTarget();
 
     void setTarget(String target);
+
+
 }

@@ -1,5 +1,7 @@
 package com.github.shevchuk.d.currency_new.model;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * Created by dmsh0216 on 13/01/2017.
  */
@@ -52,5 +54,16 @@ public class CurrencyObject implements Currency {
     @Override
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    @Override
+    public String toString() {
+        ToStringCreator toStringCreator = new ToStringCreator(this);
+        toStringCreator
+                .append(getDateTime())
+                .append(getBase())
+                .append(getTarget())
+                .append(getRate());
+        return toStringCreator.toString();
     }
 }

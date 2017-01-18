@@ -62,7 +62,7 @@ CREATE TABLE `new_currency` (
 	`dateTime` DATE NOT NULL,
 	`base` varchar(3) DEFAULT NULL,
 	`target` varchar(3) DEFAULT NULL,
-	`rate` int(511) DEFAULT NULL,
+	`rate` int DEFAULT NULL,
 	PRIMARY KEY (`dateTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
