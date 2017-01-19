@@ -32,8 +32,8 @@
 
 <body>
 <div class="jumbotron text-center">
-    <h1>My First Bootstrap Page</h1>
-    <p>Resize this responsive page to see the effect!</p>
+    <h1>Some Epic Text!</h1>
+    <p>A little bit more of text!</p>
 </div>
 
 <div class="container">
@@ -60,7 +60,13 @@
 <%--</div>--%>
 <!-- /container -->
 
-
+<script>
+    function makeDate(date) {
+        var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+    }
+</script>
 
 <div class="table-bordered col-lg-12">
     <div class="col-lg-4">
@@ -104,45 +110,75 @@
             <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
         </form:form>
     </div>
+    <div class="table-bordered col-lg-8" id="chart_div"></div>
+</div>
+
+<table class="col-lg-12"><tr><td>
     <div class="vert-align">
         <div class="table-hover table-responsive">
             <table class="table table-hover">
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Age</th>
-                    <th>City</th>
-                    <th>Country</th>
+                    <th>Date</th>
+                    <th>Base</th>
+                    <th>Target</th>
+                    <th>Rate</th>
+                    <th>Dynamic</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Anna</td>
-                    <td>Pitt</td>
-                    <td>35</td>
-                    <td>New York</td>
-                    <td>USA</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td><span class="glyphicon glyphicon-arrow-down"></span></td>
-                    <td><span class="glyphicon glyphicon-arrow-up"></span></td>
-                    <td><span class="glyphicon glyphicon-refresh"></span></td>
-                    <td><span class="glyphicon glyphicon-floppy-save"></span></td>
-                    <td><span class="glyphicon glyphicon-floppy-saved"></span></td>
-                </tr>
+                <c:set var="coordinatesIndex" value="0"></c:set>
+                <c:forEach items='${chartChart}' var="coordinates">
+                    <c:set var="currentItem" value = "${chartChart.get(chartChart.size() - 1 - coordinatesIndex)}"/>
+                    <c:set var="isFirst" value = "${ (coordinatesIndex == 0)}"/>
+                    <c:set var="isLast" value = "${ (coordinatesIndex == chartChart.size() - 1) }"/>
+                    <tr>
+                        <td id="${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n">
+                            <script>
+                                document.getElementById("${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n").innerHTML = ${coordinatesIndex + 1};
+                            </script>
+                        </td>
+                        <td id="${currentItem.get(0)}_${coordinatesIndex}_date">
+                            <script>
+                                document.getElementById("${currentItem.get(0)}_${coordinatesIndex}_date").innerHTML = makeDate(${currentItem.get(0)});
+                            </script>
+                        </td>
+                        <td>${currencyCurrentView.base}</td>
+                        <td>${currencyCurrentView.target}</td>
+                        <td>${currentItem.get(1)}</td>
+                        <td>
+                            <span class="
+                            ${
+                                ( !isFirst && !isLast
+			                                ? ( currentItem.get(1) < chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1)
+									                                 ? "glyphicon glyphicon-arrow-down"
+									                                 : ( !isFirst && currentItem.get(1) > chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1) )
+																		                                ? "glyphicon glyphicon-arrow-up"
+																		                                : "" )
+			                                : isFirst
+			                                        ? (currentItem.get(1) > (chartChart.get(chartChart.size() - 2 - coordinatesIndex))
+			                                                                ? "glyphicon glyphicon-arrow-down"
+			                                                                : "glyphicon glyphicon-arrow-up")
+			                                        : ""
+			                                )
+
+                            }
+                            ">
+                            </span>
+                        </td>
+                            <%--<td><span class="glyphicon glyphicon-arrow-down"></span></td>--%>
+                            <%--<td><span class="glyphicon glyphicon-arrow-up"></span></td>--%>
+                            <%--<td><span class="glyphicon glyphicon-refresh"></span></td>--%>
+                            <%--<td><span class="glyphicon glyphicon-floppy-save"></span></td>--%>
+                            <%--<td><span class="glyphicon glyphicon-floppy-saved"></span></td>--%>
+                    </tr>
+                    <c:set var="coordinatesIndex" value="${coordinatesIndex + 1}"></c:set>
+                </c:forEach>
                 </tbody>
             </table>
         </div>
     </div>
-
-</div>
-
-<table class="col-lg-12"><tr><td>
-    <div class="table-bordered col-lg-12" id="chart_div"></div>
 </td></tr></table>
 
 

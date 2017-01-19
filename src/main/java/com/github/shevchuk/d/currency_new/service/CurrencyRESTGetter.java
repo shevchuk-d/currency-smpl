@@ -20,12 +20,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by dmsh0216 on 11/01/2017.
@@ -98,9 +102,9 @@ public class CurrencyRESTGetter {
 
     public  void readJsonForParameters(String url, DateTime fromDate, DateTime toDate, String baseCurrency, String targetCurrency) throws IOException {
         ArrayList<JSONObject> currencyFromDateForBase = new ArrayList<>();
-        int days = Days.daysBetween(fromDate, toDate).getDays();
+        int days = Days.daysBetween(fromDate, toDate).getDays() + 1;
         int omitedDeys = days < 100 ? 0 : days/100;
-        for (int i = 0; i < days; i++){
+        for (int i = 0; i <= days; i++){
             log.info(fromDate.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")));
             log.info("Days to omit: " + omitedDeys);
             currencyFromDateForBase
@@ -117,14 +121,32 @@ public class CurrencyRESTGetter {
                     log.info(String.valueOf(currencyObject.getBase()));
                     log.info(String.valueOf(currencyObject.getTarget()));
                     ArrayList<String> arrayList = new ArrayList<>();
+
                     DateTime jodaTime = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(currencyObject.getDateTime());
-                    arrayList.add("new Date("
+                    int i = 1;
+                    String newDate = "new Date("
                             + jodaTime.getYear() + ", "
-                            + (jodaTime.getMonthOfYear() -1) + ", "
-                            + jodaTime.getDayOfMonth() + ")");
+                            + (jodaTime.getMonthOfYear() - i) + ", "
+                            + jodaTime.getDayOfMonth() + ")";
+                    if (chart.getCoordinates().size() >= 1 && chart.getCoordinates().get(chart.getCoordinates().size() - 1).get(0).equals(newDate) ){
+                        newDate = "new Date("
+                                + jodaTime.getYear() + ", "
+                                + (jodaTime.getMonthOfYear() - i) + ", "
+                                + (jodaTime.getDayOfMonth() + 1) + ")";
+                    }
+                    if (chart.getCoordinates().size() >= 2 && chart.getCoordinates().get(chart.getCoordinates().size() - 2).get(0).equals(newDate) ){
+                        newDate = "new Date("
+                                + jodaTime.getYear() + ", "
+                                + (jodaTime.getMonthOfYear() - i) + ", "
+                                + (jodaTime.getDayOfMonth() + 2) + ")";
+                    }
+                    arrayList.add(newDate);
+                    DecimalFormat decimalFormat = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+                    decimalFormat.setMaximumFractionDigits(6);
                     arrayList.add(String.valueOf(
-                            ( (float)currencyObject.getRate() ) /  Float.parseFloat(currencyMultiplier)
-                    ));
+                            ( decimalFormat.format(((float)currencyObject.getRate() ) /  Float.parseFloat(currencyMultiplier))
+//                    new BigDecimal( ((float)currencyObject.getRate() ) /  Float.parseFloat(currencyMultiplier) ).toPlainString()
+                    )));
                     chart.getCoordinates().add(arrayList);
                     log.info(chart.getCoordinates().toString());
                 }

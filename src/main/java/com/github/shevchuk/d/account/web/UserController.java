@@ -121,6 +121,7 @@ public class UserController {
         Chart chart = new Chart();
         chart.setCoordinates(currencyRESTGetter.chart.getCoordinates());
         model.addAttribute("chart", chart.toString());
+        model.addAttribute("chartChart", currencyRESTGetter.chart.getCoordinates());
 
         CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
         currencyCurrentView.setTarget(targetCurrency);
@@ -152,36 +153,6 @@ public class UserController {
         return "welcome";
     }
 
-
-//    @RequestMapping( method=RequestMethod.GET, value="/currency_chart" )
-//    public ModelAndView getSubView(@ModelAttribute("currencySelector") CurrencyCurrentView c,
-//                                    BindingResult bindingResult,
-//                                    Model model ) throws IOException {
-//        CurrencyCurrentView currencySelector = (CurrencyCurrentView) bindingResult.getModel().get("currencySelector");
-//        if ( !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
-//        if ( !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
-//        if ( !(null == currencySelector.getPeriod()) && !"".equals(currencySelector.getPeriod()) ) {
-//            endDateForDump = new DateTime().toString();
-//            startDateForDump = new DateTime().minusDays(periodsToDays(currencySelector.getPeriod())).toString();
-//        }
-//        currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl ,
-//                new DateTime(startDateForDump) ,
-//                endDateForDump.toLowerCase().equals("today") ? new DateTime() : new DateTime(endDateForDump) ,
-//                baseCurrency ,
-//                targetCurrency
-//        );
-//        CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
-//        currencyCurrentView.setTarget(targetCurrency);
-//        currencyCurrentView.setBase(baseCurrency);
-//        currencyCurrentView.setFromTime(startDateForDump);
-//        Chart chart = new Chart();
-//        chart.setCoordinates(currencyRESTGetter.chart.getCoordinates());
-//        log.debug(chart.toString());
-//        model.addAttribute("chart", chart.toString());
-//        model.addAttribute("currencyCurrentView", currencyCurrentView);
-//
-//        return new ModelAndView( "currency_chart" );
-//    }
 
 
     private int periodsToDays(String period){
