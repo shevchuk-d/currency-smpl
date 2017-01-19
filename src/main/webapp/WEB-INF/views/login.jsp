@@ -31,7 +31,12 @@
 </head>
 
 <body>
-<div id="header"></div>
+<div class="jumbotron text-center">
+    <h1>My First Bootstrap Page</h1>
+    <p>Resize this responsive page to see the effect!</p>
+</div>
+
+<div class="container">
 <%--<div class="container">--%>
 
     <%--<form method="POST" action="${contextPath}/login" class="form-signin">--%>
@@ -57,51 +62,88 @@
 
 
 
-<div><table class="table-bordered"><tr><td>
-    <form:form method="GET" modelAttribute="currencySelector" class="form-signin">
-        <div class="form-group">
-            <table class="table-hover">
-                <tr>
-                    <td>
-                        <form:label path="base">
-                            <spring:message text="Base currency: "/>
-                        </form:label>
-                    </td>
-                    <td>
-                        <form:select cssClass="form-control" path="base" items="${currencies}" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <form:label path="target">
-                            <spring:message text="Target currency: "/>
-                        </form:label>
-                    </td>
-                    <td>
-                        <form:select cssClass="form-control" path="target" items="${currencies}" />
-                    </td>
-                </tr>
+<div class="table-bordered col-lg-12">
+    <div class="col-lg-4">
+        <form:form method="GET" modelAttribute="currencySelector" class="form-signin">
+            <div class="form-group">
+                <table class="table-hover">
+                    <tr>
+                        <td>
+                            <form:label path="base">
+                                <spring:message text="Base currency: "/>
+                            </form:label>
+                        </td>
+                        <td>
+                            <form:select cssClass="form-control" path="base" items="${currencies}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form:label path="target">
+                                <spring:message text="Target currency: "/>
+                            </form:label>
+                        </td>
+                        <td>
+                            <form:select cssClass="form-control" path="target" items="${currencies}" />
+                        </td>
+                    </tr>
 
+                    <tr>
+                        <td>
+                            <form:label path="period">
+                                <spring:message text="Select period: "/>
+                            </form:label>
+                        </td>
+                        <td>
+                            <form:select cssClass="form-control" path="period" items="${periodSelect}" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
+        </form:form>
+    </div>
+    <div class="vert-align">
+        <div class="table-hover table-responsive">
+            <table class="table table-hover">
+                <thead>
                 <tr>
-                    <td>
-                        <form:label path="period">
-                            <spring:message text="Select period: "/>
-                        </form:label>
-                    </td>
-                    <td>
-                        <form:select cssClass="form-control" path="period" items="${periodSelect}" />
-                    </td>
+                    <th>#</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Age</th>
+                    <th>City</th>
+                    <th>Country</th>
                 </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Anna</td>
+                    <td>Pitt</td>
+                    <td>35</td>
+                    <td>New York</td>
+                    <td>USA</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><span class="glyphicon glyphicon-arrow-down"></span></td>
+                    <td><span class="glyphicon glyphicon-arrow-up"></span></td>
+                    <td><span class="glyphicon glyphicon-refresh"></span></td>
+                    <td><span class="glyphicon glyphicon-floppy-save"></span></td>
+                    <td><span class="glyphicon glyphicon-floppy-saved"></span></td>
+                </tr>
+                </tbody>
             </table>
         </div>
+    </div>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
-    </form:form>
-</td></tr></table></div>
+</div>
 
-<div><table class="table-bordered"><tr><td>
-    <div id="chart_div"></div>
-</td></tr></table></div>
+<table class="col-lg-12"><tr><td>
+    <div class="table-bordered col-lg-12" id="chart_div"></div>
+</td></tr></table>
 
 
 <script>
@@ -118,6 +160,12 @@
         ]);
 
         var options = {
+            backgroundColor: {
+                fill: '#eee'
+            },
+            chartArea: {
+                backgroundColor: '#eee'
+            },
             hAxis: {
                 format: 'yyyy-MM-dd',
                 textStyle: {
@@ -156,6 +204,6 @@
         chart.draw(data, options);
     }
 </script>
-
+</div>
 </body>
 </html>

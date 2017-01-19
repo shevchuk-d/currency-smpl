@@ -3,7 +3,7 @@ body {
     padding-bottom: 40px;
     background-color: #eee;
 }
-.chart_div{
+#chart_div{
     background-color: #eee;
 }
 
@@ -48,4 +48,17 @@ body {
 
 .has-error {
     color: red
+}
+td.vert-align{
+    vertical-align: top;
+}
+
+.top-container{
+    /*position:absolute;*/
+    top:0;
+}
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url(../fonts/glyphicons-halflings-regular.eot);
+    src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'), url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'), url(../fonts/glyphicons-halflings-regular.woff) format('woff'), url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'), url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
 }
