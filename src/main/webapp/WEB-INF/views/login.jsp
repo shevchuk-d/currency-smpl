@@ -167,7 +167,7 @@
                 backgroundColor: '#eee'
             },
             hAxis: {
-                format: 'yyyy-MM-dd',
+                format: 'MMM dd, yyyy',
                 textStyle: {
                     color: '#01579b',
                     fontSize: 14,
