@@ -18,6 +18,7 @@
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="${contextPath}/resources/js/jquery-3.1.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -91,6 +92,11 @@
                         </td>
                         <td>
                             <form:select cssClass="form-control" path="target" items="${currencies}" />
+                        </td>
+                        <td>
+                            <button class="btn" type="submit" ><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
+                            <button class="btn" type="submit" ><i class="fa fa-calculator" aria-hidden="true"></i></button>
+                            <button class="btn" type="submit" ><i class="fa fa-exchange fa-rotate-90" aria-hidden="true"></i></button>
                         </td>
                     </tr>
 
