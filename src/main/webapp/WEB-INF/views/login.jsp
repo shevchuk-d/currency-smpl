@@ -38,7 +38,6 @@
 </div>
 
 <div class="container">
-<%--<div class="container">--%>
 
     <%--<form method="POST" action="${contextPath}/login" class="form-signin">--%>
         <%--<h2 class="form-heading">Log in</h2>--%>
@@ -57,135 +56,158 @@
 
     <%--</form>--%>
 
-
 <%--</div>--%>
 <!-- /container -->
 
 <script>
     function makeDate(date) {
-        var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
         var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
     }
 </script>
-
-<div class="table-bordered col-lg-12">
-    <div class="col-lg-4">
-        <form:form method="GET" modelAttribute="currencySelector" class="form-signin">
-            <div class="form-group">
-                <table class="table-hover">
-                    <tr>
-                        <td>
-                            <form:label path="base">
-                                <spring:message text="Base currency: "/>
-                            </form:label>
-                        </td>
-                        <td>
-                            <form:select cssClass="form-control" path="base" items="${currencies}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form:label path="target">
-                                <spring:message text="Target currency: "/>
-                            </form:label>
-                        </td>
-                        <td>
-                            <form:select cssClass="form-control" path="target" items="${currencies}" />
-                        </td>
-                        <td>
-                            <button class="btn" type="submit" ><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
-                            <button class="btn" type="submit" ><i class="fa fa-calculator" aria-hidden="true"></i></button>
-                            <button class="btn" type="submit" ><i class="fa fa-exchange fa-rotate-90" aria-hidden="true"></i></button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <form:label path="period">
-                                <spring:message text="Select period: "/>
-                            </form:label>
-                        </td>
-                        <td>
-                            <form:select cssClass="form-control" path="period" items="${periodSelect}" />
-                        </td>
-                    </tr>
-                </table>
+<div>
+    <form:form method="GET" modelAttribute="currencySelector">
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="base">
+                        <spring:message  text="Base currency:"/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                    <form:select cssClass="form-control" path="base" items="${currencies}" />
+                </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="target">
+                        <spring:message text="Target currency: "/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                    <form:select cssClass="form-control" path="target" items="${currencies}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="period">
+                        <spring:message text="Select period: "/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                    <form:select cssClass="form-control" path="period" items="${periodSelect}" />
+                </div>
+            </div>
+        </div>
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
-        </form:form>
-    </div>
-    <div class="table-bordered col-lg-8" id="chart_div"></div>
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="amount">
+                        <spring:message text="In ${currencyCurrentView.base}: "/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                        <form:input cssClass="form-control" path="amount"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="rate">
+                        <spring:message text="Rate: "/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                    <form:input cssClass="form-control" path="rate" readonly="true" value='${chartChart.get(chartChart.size() - 1).get(1)}'/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <form:label path="rate">
+                        <spring:message text="In ${currencyCurrentView.target}: "/>
+                    </form:label>
+                </div>
+                <div class="col-sm-6">
+                    <input class="form-control"  readonly="true" value='${currencyCurrentView.result}'/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-lg btn-default btn-block" type="submit" >Submit</button>
+        </div>
+
+    </form:form>
 </div>
 
-<table class="col-lg-12"><tr><td>
-    <div class="vert-align">
-        <div class="table-hover table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Base</th>
-                    <th>Target</th>
-                    <th>Rate</th>
-                    <th>Dynamic</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:set var="coordinatesIndex" value="0"></c:set>
-                <c:forEach items='${chartChart}' var="coordinates">
-                    <c:set var="currentItem" value = "${chartChart.get(chartChart.size() - 1 - coordinatesIndex)}"/>
-                    <c:set var="isFirst" value = "${ (coordinatesIndex == 0)}"/>
-                    <c:set var="isLast" value = "${ (coordinatesIndex == chartChart.size() - 1) }"/>
-                    <tr>
-                        <td id="${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n">
-                            <script>
-                                document.getElementById("${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n").innerHTML = ${coordinatesIndex + 1};
-                            </script>
-                        </td>
-                        <td id="${currentItem.get(0)}_${coordinatesIndex}_date">
-                            <script>
-                                document.getElementById("${currentItem.get(0)}_${coordinatesIndex}_date").innerHTML = makeDate(${currentItem.get(0)});
-                            </script>
-                        </td>
-                        <td>${currencyCurrentView.base}</td>
-                        <td>${currencyCurrentView.target}</td>
-                        <td>${currentItem.get(1)}</td>
-                        <td>
-                            <span class="
-                            ${
-                                ( !isFirst && !isLast
-			                                ? ( currentItem.get(1) < chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1)
-									                                 ? "glyphicon glyphicon-arrow-down"
-									                                 : ( !isFirst && currentItem.get(1) > chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1) )
-																		                                ? "glyphicon glyphicon-arrow-up"
-																		                                : "" )
-			                                : isFirst
-			                                        ? (currentItem.get(1) > (chartChart.get(chartChart.size() - 2 - coordinatesIndex))
-			                                                                ? "glyphicon glyphicon-arrow-down"
-			                                                                : "glyphicon glyphicon-arrow-up")
-			                                        : ""
-			                                )
 
-                            }
-                            ">
-                            </span>
-                        </td>
-                            <%--<td><span class="glyphicon glyphicon-arrow-down"></span></td>--%>
-                            <%--<td><span class="glyphicon glyphicon-arrow-up"></span></td>--%>
-                            <%--<td><span class="glyphicon glyphicon-refresh"></span></td>--%>
-                            <%--<td><span class="glyphicon glyphicon-floppy-save"></span></td>--%>
-                            <%--<td><span class="glyphicon glyphicon-floppy-saved"></span></td>--%>
-                    </tr>
-                    <c:set var="coordinatesIndex" value="${coordinatesIndex + 1}"></c:set>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</td></tr></table>
+
+<br>
+        <div id="chart_div"></div>
+<br>
+
+<div class="table table-hover table-responsive col-lg-12">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Base</th>
+            <th>Target</th>
+            <th>Rate</th>
+            <th>Dynamic</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:set var="coordinatesIndex" value="0"></c:set>
+        <c:forEach items='${chartChart}' var="coordinates">
+            <c:set var="currentItem" value = "${chartChart.get(chartChart.size() - 1 - coordinatesIndex)}"/>
+            <c:set var="isFirst" value = "${ (coordinatesIndex == 0)}"/>
+            <c:set var="isLast" value = "${ (coordinatesIndex == chartChart.size() - 1) }"/>
+            <tr>
+                <td id="${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n">
+                    <script>
+                        document.getElementById("${chartChart.get(coordinatesIndex).get(0)}_${coordinatesIndex}_n").innerHTML = ${coordinatesIndex + 1};
+                    </script>
+                </td>
+                <td id="${currentItem.get(0)}_${coordinatesIndex}_date">
+                    <script>
+                        document.getElementById("${currentItem.get(0)}_${coordinatesIndex}_date").innerHTML = makeDate(${currentItem.get(0)});
+                    </script>
+                </td>
+                <td>${currencyCurrentView.base}</td>
+                <td>${currencyCurrentView.target}</td>
+                <td>${currentItem.get(1)}</td>
+                <td>
+                    <span class="
+                    ${
+                        ( !isFirst && !isLast
+                                    ? ( currentItem.get(1) < chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1)
+                                                             ? "glyphicon glyphicon-arrow-down"
+                                                             : ( !isFirst && currentItem.get(1) > chartChart.get(chartChart.size() - 2 - coordinatesIndex).get(1) )
+                                                                                                ? "glyphicon glyphicon-arrow-up"
+                                                                                                : "" )
+                                    : isFirst
+                                            ? (currentItem.get(1) > (chartChart.get(chartChart.size() - 2 - coordinatesIndex))
+                                                                    ? "glyphicon glyphicon-arrow-down"
+                                                                    : "glyphicon glyphicon-arrow-up")
+                                            : ""
+                                    )
+
+                    }
+                    ">
+                    </span>
+                </td>
+                    <%--<td><span class="glyphicon glyphicon-arrow-down"></span></td>--%>
+                    <%--<td><span class="glyphicon glyphicon-arrow-up"></span></td>--%>
+                    <%--<td><span class="glyphicon glyphicon-refresh"></span></td>--%>
+                    <%--<td><span class="glyphicon glyphicon-floppy-save"></span></td>--%>
+                    <%--<td><span class="glyphicon glyphicon-floppy-saved"></span></td>--%>
+            </tr>
+            <c:set var="coordinatesIndex" value="${coordinatesIndex + 1}"></c:set>
+        </c:forEach>
+        </tbody>
+    </table>
+</div>
 
 
 <script>

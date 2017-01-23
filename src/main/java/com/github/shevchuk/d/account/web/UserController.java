@@ -6,24 +6,20 @@ import com.github.shevchuk.d.account.service.UserService;
 import com.github.shevchuk.d.account.validator.UserValidator;
 import com.github.shevchuk.d.chart.model.Chart;
 
-import com.github.shevchuk.d.currency_new.model.CurrencyObject;
 import com.github.shevchuk.d.currency_new.service.CurrencyRESTGetter;
 import com.github.shevchuk.d.view.model.CurrencyCurrentView;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * Created by dmsh0216 on 10/01/2017.
@@ -103,9 +99,9 @@ public class UserController {
             String error,
             String logout) throws IOException {
         CurrencyCurrentView currencySelector = (CurrencyCurrentView) bindingResult.getModel().get("currencySelector");
-        if ( !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
-        if ( !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
-        if ( !(null == currencySelector.getPeriod()) && !"".equals(currencySelector.getPeriod()) ) {
+        if ( null != currencySelector && !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
+        if ( null != currencySelector &&  !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
+        if ( null != currencySelector &&  !(null == currencySelector.getPeriod()) && !"".equals(currencySelector.getPeriod()) ) {
             int minus =  periodsToDays(currencySelector.getPeriod());
             endDateForDump = new DateTime().toString();
             startDateForDump = (minus == - 1)
@@ -118,15 +114,22 @@ public class UserController {
                 baseCurrency ,
                 targetCurrency
                 );
+        ArrayList<ArrayList<String>> arrayList = currencyRESTGetter.chart.getCoordinates();
+
         Chart chart = new Chart();
-        chart.setCoordinates(currencyRESTGetter.chart.getCoordinates());
+        chart.setCoordinates(arrayList);
         model.addAttribute("chart", chart.toString());
-        model.addAttribute("chartChart", currencyRESTGetter.chart.getCoordinates());
+        model.addAttribute("chartChart", arrayList);
 
         CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
         currencyCurrentView.setTarget(targetCurrency);
         currencyCurrentView.setBase(baseCurrency);
         currencyCurrentView.setFromTime(startDateForDump);
+        currencyCurrentView.setAmount(currencySelector.getAmount());
+        currencyCurrentView.setRate(currencySelector.getRate());
+        currencyCurrentView.setResult(
+                String.valueOf(Double.parseDouble( currencySelector.getAmount() ) * Double.parseDouble( currencySelector.getRate() ))
+        );
 
 
         model.addAttribute("currencyCurrentView", currencyCurrentView);
@@ -154,7 +157,6 @@ public class UserController {
     }
 
 
-
     private int periodsToDays(String period){
         if ("1 week".equals(period)) return 7;
         if ("2 weeks".equals(period)) return 14;
@@ -169,6 +171,5 @@ public class UserController {
         if ("from the beginning".equals(period)) return -1;
         return 7;
     }
-
 
 }

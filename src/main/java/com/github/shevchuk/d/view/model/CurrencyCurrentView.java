@@ -18,12 +18,21 @@ public class CurrencyCurrentView {
 
     private String period;
 
+    private String amount;
+
+    private String rate;
+
+    private String result;
+
     public CurrencyCurrentView(){
         this.period = "7";
         this.fromTime = new DateTime().minusDays(Integer.parseInt(this.period)).toString(DateTimeFormat.forPattern("yyyy-MM-dd"));
         this.toTime = new DateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd"));
         this.base = "USD";
         this.target = "EUR";
+        this.amount = "0";
+        this.rate = "0";
+        this.result = String.valueOf(Double.parseDouble( this.amount ) * Double.parseDouble( this.rate));
     }
 
     public String getFromTime() {
@@ -64,5 +73,29 @@ public class CurrencyCurrentView {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getResult() {
+        return String.valueOf(Double.parseDouble( this.amount ) * Double.parseDouble( this.rate));
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
