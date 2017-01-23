@@ -65,87 +65,104 @@
         return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
     }
 </script>
-<div>
+<div class="table-bordered">
     <form:form method="GET" modelAttribute="currencySelector">
-        <div class="col-sm-6">
-            <div class="row">
-                <div class="col-sm-6">
+        <div class="col-sm-4">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="base">
-                        <spring:message  text="Base currency:"/>
+                        <spring:message  text="From:"/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <form:select cssClass="form-control" path="base" items="${currencies}" />
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="target">
-                        <spring:message text="Target currency: "/>
+                        <spring:message text="To: "/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <form:select cssClass="form-control" path="target" items="${currencies}" />
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="period">
-                        <spring:message text="Select period: "/>
+                        <spring:message text="Period: "/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <form:select cssClass="form-control" path="period" items="${periodSelect}" />
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="row">
-                <div class="col-sm-6">
+        <div class="col-sm-4 table-bordered">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="amount">
-                        <spring:message text="In ${currencyCurrentView.base}: "/>
+                        <spring:message text="${currencyCurrentView.base}: "/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                         <form:input cssClass="form-control" path="amount"/>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="rate">
                         <spring:message text="Rate: "/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <form:input cssClass="form-control" path="rate" readonly="true" value='${chartChart.get(chartChart.size() - 1).get(1)}'/>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row hoverDiv">
+                <div class="col-sm-4">
                     <form:label path="rate">
-                        <spring:message text="In ${currencyCurrentView.target}: "/>
+                        <spring:message text="${currencyCurrentView.target}: "/>
                     </form:label>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <input class="form-control"  readonly="true" value='${currencyCurrentView.result}'/>
                 </div>
             </div>
         </div>
-        <div>
-            <button class="btn btn-lg btn-default btn-block" type="submit" >Submit</button>
-        </div>
 
+        <%--<div class="col-sm-4">--%>
+            <%--<div class="row">--%>
+                <%--<div class="col-sm-4"></div>--%>
+                <%--<div class="col-sm-4"></div>--%>
+            <%--</div>--%>
+            <%--<div class="row">--%>
+                <%--<div class="col-sm-4"></div>--%>
+                <%--<div class="col-sm-4"></div>--%>
+            <%--</div>--%>
+            <%--<div class="row">--%>
+                <%--<div class="col-sm-4"></div>--%>
+                <%--<div class="col-sm-4"></div>--%>
+            <%--</div>--%>
+        <%--</div>--%>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-12">
+                    <button class="btn btn-lg btn-default btn-block" type="submit" >Submit</button>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+        </div>
     </form:form>
 </div>
 
+<div class="table-bordered col-sm-12" id="chart_div"></div>
+<%--<br>--%>
 
-
-<br>
-        <div id="chart_div"></div>
-<br>
-
-<div class="table table-hover table-responsive col-lg-12">
+<div class="table-bordered table-hover table-responsive col-lg-12">
     <table class="table table-hover">
         <thead>
         <tr>

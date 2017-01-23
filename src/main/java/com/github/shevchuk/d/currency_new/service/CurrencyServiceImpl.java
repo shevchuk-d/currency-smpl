@@ -14,6 +14,11 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Autowired
     private CurrencyRepository currencyRepository;
 
+    @Autowired
+    public CurrencyServiceImpl(CurrencyRepository currencyRepository) {
+        this.currencyRepository = currencyRepository;
+    }
+
     @Override
     public void save(CurrencyEntity currency) {
         currencyRepository.save(currency);
