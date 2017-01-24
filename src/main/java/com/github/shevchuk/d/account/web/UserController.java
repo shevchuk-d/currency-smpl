@@ -98,6 +98,24 @@ public class UserController {
             Model model,
             String error,
             String logout) throws IOException {
+
+
+        if (error != null)
+            model.addAttribute("error", "Your username and password is invalid.");
+
+        if (logout != null)
+            model.addAttribute("message", "You have been logged out successfully.");
+
+        return "login";
+    }
+
+    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    public String welcome(@ModelAttribute("currencySelector") CurrencyCurrentView c,
+                          BindingResult bindingResult,
+                          Model model,
+                          String error,
+                          String logout) throws IOException {
+
         CurrencyCurrentView currencySelector = (CurrencyCurrentView) bindingResult.getModel().get("currencySelector");
         if ( null != currencySelector && !(null == currencySelector.getBase()) && !"".equals(currencySelector.getBase()) ) baseCurrency = currencySelector.getBase();
         if ( null != currencySelector &&  !(null == currencySelector.getTarget()) && !"".equals(currencySelector.getTarget()) ) targetCurrency = currencySelector.getTarget();
@@ -105,15 +123,15 @@ public class UserController {
             int minus =  periodsToDays(currencySelector.getPeriod());
             endDateForDump = new DateTime().toString();
             startDateForDump = (minus == - 1)
-                                ? theBeginning
-                                : new DateTime().minusDays(minus).toString();
+                    ? theBeginning
+                    : new DateTime().minusDays(minus).toString();
         }
         currencyRESTGetter.readJsonForParameters(currencyRestServiceUrl ,
                 new DateTime(startDateForDump) ,
                 endDateForDump.toLowerCase().equals("today") ? new DateTime() : new DateTime(endDateForDump) ,
                 baseCurrency ,
                 targetCurrency
-                );
+        );
         ArrayList<ArrayList<String>> arrayList = currencyRESTGetter.chart.getCoordinates();
 
         Chart chart = new Chart();
@@ -140,17 +158,8 @@ public class UserController {
         String[] periodSelect = periods.split(",");
         model.addAttribute("periodSelect", periodSelect);
 
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
 
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
 
-        return "login";
-    }
-
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
         return "welcome";
     }
 
