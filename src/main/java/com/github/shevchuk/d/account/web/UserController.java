@@ -140,8 +140,6 @@ public class UserController {
         String[] periodSelect = periods.split(",");
         model.addAttribute("periodSelect", periodSelect);
 
-
-
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");
 

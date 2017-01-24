@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<%@ page import ="java.util.ArrayList" %>
+
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
@@ -21,6 +23,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="${contextPath}/resources/js/jquery-3.1.1.min.js"></script>
+    <script src="${contextPath}/resources/js/money.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -65,6 +68,24 @@
         return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
     }
 </script>
+
+<script>
+    function getActualDataJSON(from, to, id) {
+
+        var baseIfEuro = (to == "EUR" || from == "EUR" ) ? "?base=HUF" : "";
+
+        console.log(baseIfEuro);
+
+        var demo = function(data) {
+            fx.rates = data.rates;
+            var rate = fx(1).from(from).to(to);
+            document.getElementById(id).innerHTML = rate.toFixed(4);
+        };
+
+        $.getJSON("http://api.fixer.io/latest" + baseIfEuro, demo);
+    }
+</script>
+
 <div class="table-bordered">
     <form:form method="GET" modelAttribute="currencySelector">
         <div class="col-sm-4">
@@ -75,7 +96,10 @@
                     </form:label>
                 </div>
                 <div class="col-sm-8">
-                    <form:select cssClass="form-control" path="base" items="${currencies}" />
+                    <script>
+
+                    </script>
+                    <form:select id="base_select" cssClass="form-control" path="base" items="${currencies}" />
                 </div>
             </div>
             <div class="row hoverDiv">
@@ -85,7 +109,8 @@
                     </form:label>
                 </div>
                 <div class="col-sm-8">
-                    <form:select cssClass="form-control" path="target" items="${currencies}" />
+
+                    <form:select id="to_select" cssClass="form-control" path="target" items="${currencies}" />
                 </div>
             </div>
             <div class="row hoverDiv">
@@ -103,12 +128,17 @@
         <div class="col-sm-4 table-bordered">
             <div class="row hoverDiv">
                 <div class="col-sm-4">
-                    <form:label path="amount">
-                        <spring:message text="${currencyCurrentView.base}: "/>
-                    </form:label>
+                    <span id="base_name" class="boldText">
+                        <script>
+                            document.getElementById("base_name").innerText = document.getElementById("base_select").value;
+                            $( "#base_select"  ).change(function() {
+                                document.getElementById("base_name").innerText = document.getElementById("base_select").value;
+                            });
+                        </script>
+                    </span>
                 </div>
-                <div class="col-sm-8">
-                        <form:input cssClass="form-control" path="amount"/>
+                <div  class="col-sm-8">
+                        <form:input id="current_amount" cssClass="form-control" path="amount"/>
                 </div>
             </div>
             <div class="row hoverDiv">
@@ -118,49 +148,108 @@
                     </form:label>
                 </div>
                 <div class="col-sm-8">
-                    <form:input cssClass="form-control" path="rate" readonly="true" value='${chartChart.get(chartChart.size() - 1).get(1)}'/>
+                    <span id="current_rate" class="form-control"  readonly="true">
+                        <script>
+                            getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                            $( "#base_select"  ).change(function() {
+                                getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                            });
+                            $( "#to_select"  ).change(function() {
+                                getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                            });
+                        </script>
+                    </span>
                 </div>
             </div>
             <div class="row hoverDiv">
                 <div class="col-sm-4">
-                    <form:label path="rate">
-                        <spring:message text="${currencyCurrentView.target}: "/>
-                    </form:label>
+                    <span id="to_name" class="boldText">
+                        <script>
+                            document.getElementById("to_name").innerText = document.getElementById("to_select").value;
+                            $( "#to_select"  ).change(function() {
+                                document.getElementById("to_name").innerText = document.getElementById("to_select").value;
+                            });
+                        </script>
+                    </span>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control"  readonly="true" value='${currencyCurrentView.result}'/>
+                    <span id="calc_result" class="form-control"  readonly="true">
+                        <script>
+                            document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            $( "#base_select"  ).change(function() {
+                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            });
+                            $( "#to_select"  ).change(function() {
+                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            });
+                            $( "#current_amount"  ).change(function() {
+                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            });
+                            $()
+                        </script>
+                    </span>
+                    <%--<input class="form-control"  readonly="true" value='${currencyCurrentView.result}'/>--%>
                 </div>
             </div>
         </div>
-
-        <%--<div class="col-sm-4">--%>
-            <%--<div class="row">--%>
-                <%--<div class="col-sm-4"></div>--%>
-                <%--<div class="col-sm-4"></div>--%>
-            <%--</div>--%>
-            <%--<div class="row">--%>
-                <%--<div class="col-sm-4"></div>--%>
-                <%--<div class="col-sm-4"></div>--%>
-            <%--</div>--%>
-            <%--<div class="row">--%>
-                <%--<div class="col-sm-4"></div>--%>
-                <%--<div class="col-sm-4"></div>--%>
-            <%--</div>--%>
-        <%--</div>--%>
+        <script>
+//            document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+            $( "#base_select"  ).change(function() {
+                if (document.getElementById('base_select').value == document.getElementById('to_select').value){
+                    document.getElementById('submit_form').setAttribute("disabled", "true");
+                    document.getElementById('sorry').removeAttribute("hidden");
+                }else {
+                    document.getElementById('submit_form').removeAttribute("disabled");
+                    document.getElementById('sorry').setAttribute("hidden", "true");
+                }
+            });
+            $( "#to_select" ).change(function() {
+                if (document.getElementById('base_select').value == document.getElementById('to_select').value){
+                    document.getElementById('submit_form').setAttribute("disabled", "true");
+                    document.getElementById('sorry').removeAttribute("hidden");
+                }else {
+                    document.getElementById('submit_form').removeAttribute("disabled");
+                    document.getElementById('sorry').setAttribute("hidden", "true");
+                }
+            });
+            $( document ).ready(function() {
+                if (document.getElementById('base_select').value == document.getElementById('to_select').value){
+                    document.getElementById('submit_form').setAttribute("disabled", "true");
+                    document.getElementById('sorry').removeAttribute("hidden");
+                }else {
+                    document.getElementById('submit_form').removeAttribute("disabled");
+                    document.getElementById('sorry').setAttribute("hidden", "true");
+                }
+            });
+            if (document.getElementById('base_select').value == document.getElementById('to_select').value){
+                document.getElementById('submit_form').setAttribute("disabled", "true");
+                document.getElementById('sorry').removeAttribute("hidden");
+            }else {
+                document.getElementById('submit_form').removeAttribute("disabled");
+                document.getElementById('sorry').setAttribute("hidden", "true");
+            }
+        </script>
         <div class="col-sm-4">
             <div class="row">
                 <div class="col-sm-4"></div>
                 <div class="col-sm-12">
-                    <button class="btn btn-lg btn-default btn-block" type="submit" >Submit</button>
+                    <button id="submit_form" class="btn btn-lg btn-default btn-block" type="submit">Submit</button>
                 </div>
                 <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <span id="sorry" class="alert-danger" hidden>
+                        Sorry but you cannot convert currency inti itself!
+                    </span>
+                </div>
             </div>
         </div>
     </form:form>
 </div>
 
 <div class="table-bordered col-sm-12" id="chart_div"></div>
-<%--<br>--%>
+<br>
 
 <div class="table-bordered table-hover table-responsive col-lg-12">
     <table class="table table-hover">
@@ -209,16 +298,10 @@
                                                                     : "glyphicon glyphicon-arrow-up")
                                             : ""
                                     )
-
                     }
                     ">
                     </span>
                 </td>
-                    <%--<td><span class="glyphicon glyphicon-arrow-down"></span></td>--%>
-                    <%--<td><span class="glyphicon glyphicon-arrow-up"></span></td>--%>
-                    <%--<td><span class="glyphicon glyphicon-refresh"></span></td>--%>
-                    <%--<td><span class="glyphicon glyphicon-floppy-save"></span></td>--%>
-                    <%--<td><span class="glyphicon glyphicon-floppy-saved"></span></td>--%>
             </tr>
             <c:set var="coordinatesIndex" value="${coordinatesIndex + 1}"></c:set>
         </c:forEach>
