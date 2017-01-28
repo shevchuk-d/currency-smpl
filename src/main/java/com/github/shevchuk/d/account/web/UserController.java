@@ -137,7 +137,7 @@ public class UserController {
         chart.setCoordinates(arrayListChart);
         model.addAttribute("chart", chart.toString());
 
-        ArrayList<ArrayList<String>> arrayListTable = currencyRESTGetter.chart.getCoordinates();
+        ArrayList<ArrayList<String>> arrayListTable = currencyRESTGetter.table.getCoordinates();
         Chart table = new Chart();
         table.setCoordinates(arrayListTable);
         model.addAttribute("table", table.toString());
