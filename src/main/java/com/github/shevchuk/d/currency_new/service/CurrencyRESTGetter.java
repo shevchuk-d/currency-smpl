@@ -109,7 +109,7 @@ public class CurrencyRESTGetter {
 
         int days = Days.daysBetween(fromDate, toDate).getDays() + 1;
         int omitedDeys = days < 100 ? 0 : days/100;
-        for (int i = 0; i <= days; i++){
+        for (int i = 1; i <= days; i++){
             log.info(fromDate.plusDays(i).toString(DateTimeFormat.forPattern("yyyy-MM-dd")));
             log.info("Days to omit: " + omitedDeys);
             currencyFromDateForBase
