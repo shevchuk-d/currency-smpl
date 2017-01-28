@@ -40,12 +40,10 @@
 
         <div class="row table-bordered">
             <div class="col-lg-6 align-top">
-                <%--<h2 class="">--%>
                     <span class="align-top fa fa-money fa-5x"></span>
-                <%--</h2>--%>
             </div>
             <div class="col-lg-6 align-top">
-                <h2 class=" align-top blockquote-reverse">Welcome ${pageContext.request.userPrincipal.name} | <a onclick="document.forms['logoutForm'].submit()">Logout</a></h2>
+                <h2 class="align-top blockquote-reverse">Welcome ${pageContext.request.userPrincipal.name} | <a onclick="document.forms['logoutForm'].submit()">Logout</a></h2>
             </div>
         </div>
         <br>

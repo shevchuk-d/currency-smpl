@@ -30,5 +30,6 @@
     </bean>
     <bean id="currencyRESTGetter" class="com.github.shevchuk.d.currency_new.service.CurrencyRESTGetter"/>
     <bean id="chart" class="com.github.shevchuk.d.chart.model.Chart"/>
+    <bean id="table" class="com.github.shevchuk.d.chart.model.Chart"/>
 
 </beans>

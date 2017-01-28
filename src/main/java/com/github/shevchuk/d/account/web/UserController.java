@@ -132,12 +132,16 @@ public class UserController {
                 baseCurrency ,
                 targetCurrency
         );
-        ArrayList<ArrayList<String>> arrayList = currencyRESTGetter.chart.getCoordinates();
-
+        ArrayList<ArrayList<String>> arrayListChart = currencyRESTGetter.chart.getCoordinates();
         Chart chart = new Chart();
-        chart.setCoordinates(arrayList);
+        chart.setCoordinates(arrayListChart);
         model.addAttribute("chart", chart.toString());
-        model.addAttribute("chartChart", arrayList);
+
+        ArrayList<ArrayList<String>> arrayListTable = currencyRESTGetter.chart.getCoordinates();
+        Chart table = new Chart();
+        table.setCoordinates(arrayListTable);
+        model.addAttribute("table", table.toString());
+        model.addAttribute("chartChart", arrayListTable);
 
         CurrencyCurrentView currencyCurrentView = new CurrencyCurrentView();
         currencyCurrentView.setTarget(targetCurrency);
