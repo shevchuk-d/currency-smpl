@@ -22,7 +22,7 @@
 
     <script src="${contextPath}/resources/js/jquery-3.1.1.min.js"></script>
     <script src="${contextPath}/resources/js/money.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <%--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>--%>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <script language="JavaScript" type="text/javascript"  src="https://www.gstatic.com/charts/loader.js"></script>
@@ -66,7 +66,7 @@
                     var demo = function(data) {
                         fx.rates = data.rates;
                         var rate = fx(1).from(from).to(to);
-                        document.getElementById(id).innerHTML = rate.toFixed(4);
+                        document.getElementById(id).setAttribute("value", rate.toFixed(5));
                     };
 
                     $.getJSON("http://api.fixer.io/latest" + baseIfEuro, demo);
@@ -135,17 +135,22 @@
                                 </form:label>
                             </div>
                             <div class="col-sm-8">
-                    <span id="current_rate" class="form-control"  readonly="true">
-                        <script>
-                            getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
-                            $( "#base_select"  ).change(function() {
-                                getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
-                            });
-                            $( "#to_select"  ).change(function() {
-                                getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
-                            });
-                        </script>
-                    </span>
+                                <form id="current_rate_f">
+                                <input id="current_rate" class="form-control"  readonly="true">
+                                    <script>
+                                        $( document  ).ready(function() {
+                                            getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                                        });
+
+                                        $( "#base_select"  ).change(function() {
+                                            getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                                        });
+                                        $( "#to_select"  ).change(function() {
+                                            getActualDataJSON(document.getElementById('base_select').value, document.getElementById('to_select').value, 'current_rate');
+                                        });
+                                    </script>
+                                </input>
+                                </form>
                             </div>
                         </div>
                         <div class="row hoverDiv">
@@ -160,21 +165,29 @@
                     </span>
                             </div>
                             <div class="col-sm-8">
-                    <span id="calc_result" class="form-control"  readonly="true">
+                        <input id="calc_result" class="form-control"  readonly="true">
                         <script>
-                            document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
-                            $( "#base_select"  ).change(function() {
-                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            $(':input').on('change paste keyup keydown keypress mousemove', function(){
+//                            $( "#current_rate"  ).change(function() {
+                                document.getElementById("calc_result").setAttribute("value",
+                                        String((document.getElementById('current_rate').value * document.getElementById('current_amount').value).toFixed(5)));
                             });
-                            $( "#to_select"  ).change(function() {
-                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                            $('input').on('change', function(){
+//                            $( "#current_rate"  ).change(function() {
+                                document.getElementById("calc_result").setAttribute("value",
+                                        String((document.getElementById('current_rate').value * document.getElementById('current_amount').value).toFixed(5)));
                             });
                             $( "#current_amount"  ).change(function() {
-                                document.getElementById("calc_result").innerText = String(document.getElementById('current_rate').innerText * document.getElementById('current_amount').value);
+                                document.getElementById("calc_result").setAttribute("value",
+                                        String((document.getElementById('current_rate').value * document.getElementById('current_amount').value).toFixed(5)));
                             });
-                            $()
+                            $( document  ).on( 'ready mousemove', function() {
+                                document.getElementById("calc_result").setAttribute("value",
+                                        String((document.getElementById('current_rate').value * document.getElementById('current_amount').value).toFixed(5)));
+                            });
+
                         </script>
-                    </span>
+                        </input>
                                     <%--<input class="form-control"  readonly="true" value='${currencyCurrentView.result}'/>--%>
                             </div>
                         </div>
